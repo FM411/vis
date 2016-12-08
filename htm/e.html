@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<style>
+  path {
+    fill: #E5F5F9;
+    opacity:0.4;
+    stroke: #2CA25F;
+    stroke-width: 0.5;
+  }
+  #axes {
+    stroke: #BDBDBD;
+    stroke-width: 0.5;
+  }
+</style>
+<body>
+<script src="http://d3js.org/d3.v2.js"></script>
+<script>
+  var width = 960,
+      height = 500,
+      projection = d3.geo.mercator().scale(1024).translate([512, 256]),
+      path = d3.geo.path().projection(projection);
+
+  var svg = d3.select("body").append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .call(d3.behavior.zoom()
+        .translate(projection.translate())
+        .scale(projection.scale())
+        .on("zoom", redraw));
+
+  d3.csv("usa/o.csv", function(airports) {
+  var positions = [];
+
+  var cells = svg.append("svg:g")
+    .attr("id", "cells");
+
+  airports.forEach(function(airport) {
+    positions.push(projection([+airport.LONGITUDE, +airport.LATITUDE]).concat([ airport.a, airport.b, airport.c]));
+  });
+
+  // Compute the Voronoi diagram of airports' projected positions.
+  var polygons = d3.geom.voronoi(positions);
+
+  var g = cells.selectAll("g")
+      .data(airports)
+    .enter().append("svg:g");
+
+  /*g.append("svg:path")
+      .attr("class", "cell")
+      .attr("d", function(d, i) { return "M" + polygons[i].join("L") + "Z"; })
+      .on("mouseover", function(d, i) {
+        d3.select("#footer span").text(d.name);
+        d3.select("#footer .hint").text(d.city + ", " + d.state);
+      });*/
+
+  g.append("svg:circle")
+      .attr("cx", function(d, i) { return positions[i][0]; })
+      .attr("cy", function(d, i) { return positions[i][1]; })
+      .attr("r", 1.5);
+
+  g.append("svg:circle")
+      .attr("cx", 600)
+      .attr("cy", 500)
+      .attr("r", 2)
+      .style("fill", "#fff000")
+      .style("fill", "#fff000")
+      .classed("eqc","true");
+
+  for(z=0;z<positions.length;z++){
+    positions[z][0] = parseFloat(positions[z][0]);
+    positions[z][1] = parseFloat(positions[z][1]);
+  }
+
+
+
+
+
+d3.timer(waz, 100);
+
+function waz(){
+  q = d3.select(".eqc");
+  w = gz(parseFloat(q.attr("cx")),parseFloat(q.attr("cy")),positions,0.1,0,0);
+  q.attr("cx",parseFloat(q.attr("cx"))+w[0]);
+  q.attr("cy",parseFloat(q.attr("cy"))+w[1]);
+  alert(w);
+}
+
+
+
+
+
+
+
+  //alert(gz(0,1,[[6,2,1,0,0],[-6,1,1,0,0]],1,1,1));
+});
+
+  var axes = svg.append("g").attr("id", "axes"),
+      xAxis = axes.append("line").attr("y2", height),
+      yAxis = axes.append("line").attr("x2", width);
+
+  var tileg = svg.append('g').attr('id', 'tiles');
+
+  function tileUrl(d) {
+      return 'http://a.tiles.mapbox.com/v3/tmcw.map-hehqnmda/' + d.join('/') + '.png';
+  }
+
+  function redraw() {
+    if (d3.event) {
+      projection
+          .translate(d3.event.translate)
+          .scale(d3.event.scale);
+    }
+
+    var t = projection.translate(),
+        s = projection.scale(),
+        z = Math.max(Math.log(s) / Math.log(2) - 8, 0);
+        rz = Math.floor(z),
+        ts = 256 * Math.pow(2, z - rz);
+
+    // This is the 0, 0 px of the projection
+    var tile_origin = [s / 2 - t[0], s / 2 - t[1]];
+
+    var tiles = [];
+
+    var cols = d3.range(Math.max(0, Math.floor((tile_origin[0] - width) / ts)),
+        Math.max(0, Math.ceil((tile_origin[0] + width) / ts)));
+
+    var rows = d3.range(Math.max(0, Math.floor((tile_origin[1] - height) / ts)),
+        Math.max(0, Math.ceil((tile_origin[1] + height) / ts)));
+
+    cols.forEach(function(x) {
+        rows.forEach(function(y) {
+            tiles.push([Math.floor(z), x, y]);
+        });
+    });
+
+    var tiles = tileg.selectAll('image.tile')
+        .data(tiles, function(d) { return d.join(',') });
+
+    tiles.exit()
+        .transition()
+        .duration(250)
+        .style("opacity", 0.0)
+        .remove();
+
+    tiles.enter().append('image')
+        .attr('class', 'tile')
+        .attr('xlink:href', tileUrl);
+
+    tiles.attr({ width: ts, height: ts })
+        .attr('transform', function(d) {
+            return 'translate(' + [(d[1] * ts) - tile_origin[0], (d[2] * ts) - tile_origin[1]] + ')';
+        })
+
+    xAxis.attr("x1", t[0]).attr("x2", t[0]);
+    yAxis.attr("y1", t[1]).attr("y2", t[1]);
+  }
+
+  redraw();
+</script>

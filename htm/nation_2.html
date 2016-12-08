@@ -5,15 +5,11 @@
     <style type="text/css">
 
 #states path {
-  fill: #ccc;
-  stroke: #fff;
+  fill: #0c0c0c;
+  stroke: grey;
 }
 
-path.cell {
-  fill: none;
-  pointer-events: all;
-  stroke: brown;
-}
+
 
 circle {
   fill: black;
@@ -22,48 +18,84 @@ circle {
     </style>
   </head>
   <body>
-    <h2>
-      <span>U.S. airports</span>, 2008<br>
-      Voronoi diagram
-    </h2>
-    <script type="text/javascript" src="d3/d3.js"></script>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script src="//d3js.org/topojson.v1.min.js"></script>
     <script type="text/javascript" src="d3/d3.csv.js"></script>
     <script type="text/javascript" src="d3/d3.geo.js"></script>
-    <script type="text/javascript" src="d3/d3.geom.js"></script>
     <script type="text/javascript" src="geq.js"></script>
     <script type="text/javascript">
 
-var w = 1280,
-    h = 800;
+var width = 1280,
+    height = 1000;
+    centered = 0;
 
 var projection = d3.geo.azimuthal()
     .mode("equidistant")
     .origin([-98, 38])
     .scale(1400)
-    .translate([640, 360]);
+    .translate([700, 360]);
 
 var path = d3.geo.path()
     .projection(projection);
 
-var svg = d3.select("body").insert("svg:svg", "h2")
-    .attr("width", w)
-    .attr("height", h);
 
-var states = svg.append("svg:g")
-    .attr("id", "states");
 
-var cells = svg.append("svg:g")
+
+
+
+
+var zoom = d3.behavior.zoom()  
+  .scaleExtent([1, 10])  
+  .on("zoom", zoomed); 
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    
+
+var gw = svg.append("g")
+         .on("click",gclick);
+
+
+var states = gw.append("svg:g")
+    .attr("id", "states")
+    .call(zoom);  
+
+var cells = gw.append("svg:g")
     .attr("id", "cells");
+
+
+var zipcel = gw.append("svg:g")
+           .attr("id", "zipcel");
+
+var addpoi = gw.append("svg:g")
+          .attr("id","addpoi");
+
+var positions = [];
+
+var zip = [];
+
 
 d3.json("usa/us_state.json", function(collection) {
   states.selectAll("path")
       .data(collection.features)
     .enter().append("svg:path")
-      .attr("d", path);
+      .attr("d", path)
+      
 });
 
+
+
+
+
+
+
+
+
+
+
 d3.csv("usa/o.csv", function(airports) {
-  var positions = [];
+  
 
   airports.forEach(function(airport) {
     positions.push(projection([+airport.LONGITUDE, +airport.LATITUDE]).concat([ airport.a, airport.b, airport.c]));
@@ -87,40 +119,129 @@ d3.csv("usa/o.csv", function(airports) {
   g.append("svg:circle")
       .attr("cx", function(d, i) { return positions[i][0]; })
       .attr("cy", function(d, i) { return positions[i][1]; })
-      .attr("r", 1.5);
+      .attr("r", function(d,i){return positions[i][3]/positions[i][2]/9;})
+      .attr("zr", function(d,i){return positions[i][3]/positions[i][2]/9;})
+      .style("fill","#11bbcc");
+
+  
+
+
+   
+  for(z=0;z<positions.length;z++){
+    positions[z][0] = parseFloat(positions[z][0]);
+    positions[z][1] = parseFloat(positions[z][1]);
+  }
+});
+
+
+d3.csv("usa/w.csv", function(airportsw) {
+  
+
+  airportsw.forEach(function(airport){
+    zip.push(projection([+airport.LONGITUDE,+airport.LATITUDE]).concat([airport.c]));
+  })
+
+  // Compute the Voronoi diagram of airports' projected positions.
+
+  var g = zipcel.selectAll("g")
+      .data(airportsw)
+    .enter().append("svg:g");
+
+  /*g.append("svg:path")
+      .attr("class", "cell")
+      .attr("d", function(d, i) { return "M" + polygons[i].join("L") + "Z"; })
+      .on("mouseover", function(d, i) {
+        d3.select("#footer span").text(d.name);
+        d3.select("#footer .hint").text(d.city + ", " + d.state);
+      });*/
+
 
   g.append("svg:circle")
-      .attr("cx", 600)
-      .attr("cy", 500)
-      .attr("r", 2)
-      .style("fill", "#fff000")
-      .style("fill", "#fff000")
-      .classed("eqc","true");
+      .attr("cx", function(d, i) {return zip[i][0]; })
+      .attr("cy", function(d, i) { return zip[i][1]; })
+      .attr("r", function(d,i){return zip[i][2]/5000;})
+      .attr("zr", function(d,i){return zip[i][2]/5000;})
+      .style("fill","#eebbcc");
 
-  for(z=0;z<positions.length;z++){
-  	positions[z][0] = parseFloat(positions[z][0]);
-  	positions[z][1] = parseFloat(positions[z][1]);
+  
+
+
+   
+  for(z=0;z<zip.length;z++){
+    zip[z][0] = parseFloat(zip[z][0]);
+    zip[z][1] = parseFloat(zip[z][1]);
   }
 
 
 
 
 
-d3.timer(waz, 100);
 
-function waz(){
-	q = d3.select(".eqc");
-	w = gz(parseFloat(q.attr("cx")),parseFloat(q.attr("cy")),positions,0.1,0,0);
-	q.attr("cx",parseFloat(q.attr("cx"))+w[0]);
-	q.attr("cy",parseFloat(q.attr("cy"))+w[1]);
-	alert(w);
-}
+
+
+
+
+
 
 
 
 
   //alert(gz(0,1,[[6,2,1,0,0],[-6,1,1,0,0]],1,1,1));
 });
+
+
+                        
+  
+
+
+
+
+function get_poi(x,y){
+  gew = d3.select("g")
+  if(gew.attr("transform")!=""){
+   qzw = gew.attr("translate").match("(.*),(.*)");
+   wzq = parseFloat(gew.attr("scale"));
+
+  }
+  addpoi.append("svg:circle")
+      .attr("cx", (parseFloat(x)-parseFloat(qzw[1]))/wzq)
+      .attr("cy", (parseFloat(y)-parseFloat(qzw[2]))/wzq)
+      .attr("r", 2/wzq)
+      .style("fill", "#fff000")
+      .style("fill", "#fff000")
+      .classed("eqc","true")
+      .attr("transform","translate(" + gew.attr("translate") + ")" + "scale("+ gew.attr("scale") + ")");
+  d3.timer(waz, 100);
+}
+
+function waz(){
+  q = d3.select(".eqc");
+  w = gz(parseFloat(q.attr("cx")),parseFloat(q.attr("cy")),positions,0.1,0,0);
+  q.attr("cx",parseFloat(q.attr("cx"))+w[0]);
+  q.attr("cy",parseFloat(q.attr("cy"))+w[1]);
+  
+}
+
+function gclick(d){
+  get_poi(d3.mouse(this)[0],d3.mouse(this)[1]);
+  
+  
+}
+
+function zoomed() {  
+    states.attr("transform",   
+        "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");  
+    cells.selectAll("circle").attr("transform",   
+        "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")")
+        
+    zipcel.selectAll("circle").attr("transform",   
+        "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")")
+        
+    d3.select("g").attr("translate",d3.event.translate).attr("scale",d3.event.scale);
+    addpoi.selectAll("circle").attr("transform",   
+        "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")")
+        
+}
 
     </script>
   </body>
