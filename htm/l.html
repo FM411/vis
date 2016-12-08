@@ -1,27 +1,9 @@
+
 <!DOCTYPE html>
 <html>
-  <head>
-    
-    <style type="text/css">
-
-#states path {
-  fill: #0c0c0c;
-  stroke: grey;
-}
-
-
-
-circle {
-  fill: black;
-}
-
-
-
-
-    </style>
-
-
-<meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport' />
+<head>
+    <title>Flatty - Flat administration template</title>
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport' />
     
     <!--[if lt IE 9]>
     <script src='assets/javascripts/html5shiv.js' type='text/javascript'></script>
@@ -72,9 +54,8 @@ circle {
     <link href='assets/stylesheets/demo.css' media='all' rel='stylesheet' type='text/css' />
 
 
-
-  </head>
-  <body>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+<body>
 <header>
     <div class='navbar l1'>
         <div class='navbar-inner' style="background:#ffefee">
@@ -123,7 +104,7 @@ circle {
                 
 
                 <ul style="margin-top:13px">
-                   <div class="span1 lon" style="width:100px" v="0" >
+                   <div class="span1 lon" v="0" >
                       <div class="box-content box-statistic green-background">
                           
                           <small>lon</small>
@@ -136,7 +117,7 @@ circle {
                 </ul>
 
                 <ul  style="margin-top:13px">
-                   <div class="span1 lat" style="width:100px" v="0">
+                   <div class="span1 lat" v="0">
                       <div class="box-content box-statistic green-background">
                           
                           <small>lat</small>
@@ -149,11 +130,11 @@ circle {
                 </ul>
 
                 <ul style="margin-top:13px">
-                   <div class="span1 spd" style="width:100px" v="0">
+                   <div class="span1 spd" v="0">
                       <div class="box-content box-statistic red-background">
                           
                           <small>speed</small>
-                          <h3 class="title text-error">0</h3>
+                          <h3 class="title text-error">191</h3>
                           
                       </div>
                       
@@ -169,7 +150,7 @@ circle {
                       <div class="box-content box-statistic orange-background">
                           
                           <small>w1</small>
-                          <h3 class="title text-error">1</h3>
+                          <h3 class="title text-error">191</h3>
                           <input type="text" autocomplete="off" class="select2-input select2-default" id="s2id_autogen4" style="width: 30px;"/>
                       </div>
                       
@@ -182,7 +163,7 @@ circle {
                       <div class="box-content box-statistic orange-background">
                           
                           <small>w2</small>
-                          <h3 class="title text-error">1</h3>
+                          <h3 class="title text-error">191</h3>
                           <input type="text" autocomplete="off" class="select2-input select2-default" id="s2id_autogen4" style="width: 30px;"/>
                       </div>
                       
@@ -196,7 +177,7 @@ circle {
                       <div class="box-content box-statistic orange-background">
                           
                           <small>w3</small>
-                          <h3 class="title text-error">1</h3>
+                          <h3 class="title text-error">191</h3>
                           <input type="text" autocomplete="off" class="select2-input select2-default" id="s2id_autogen4" style="width: 30px;"/>
                       </div>
                       
@@ -209,7 +190,7 @@ circle {
                       <div class="box-content box-statistic orange-background">
                           
                           <small>r</small>
-                          <h3 class="title text-error">2</h3>
+                          <h3 class="title text-error">191</h3>
                           <input type="text" autocomplete="off" class="select2-input select2-default" id="s2id_autogen4" style="width: 30px;"/>
                       </div>
                       
@@ -222,7 +203,7 @@ circle {
                       <div class="box-content box-statistic orange-background">
                           
                           <small>z</small>
-                          <h3 class="title text-error">0</h3>
+                          <h3 class="title text-error">191</h3>
                           <input type="text" autocomplete="off" class="select2-input select2-default" id="s2id_autogen4" style="width: 30px;"/>
                       </div>
                       
@@ -235,7 +216,7 @@ circle {
                       <div class="box-content box-statistic orange-background">
                           
                           <small>m</small>
-                          <h3 class="title text-error">1</h3>
+                          <h3 class="title text-error">191</h3>
                           <input type="text" autocomplete="off" class="select2-input select2-default" id="s2id_autogen4" style="width: 30px;"/>
                           
                       </div>
@@ -281,10 +262,8 @@ circle {
         </div>
     </div>
 </header>
-<div class="qw"></div>
-</body>
 
-    <script src="//d3js.org/d3.v3.min.js"></script>
+<script src="//d3js.org/d3.v3.min.js"></script>
     
     <script src="//d3js.org/topojson.v1.min.js"></script>
     <script type="text/javascript" src="d3/d3.csv.js"></script>
@@ -482,23 +461,11 @@ function get_poi(x,y){
 }
 
 function waz(){
-   
-
-
-  p1 = parseFloat($(".w1").attr("v"));
-  p2 = parseFloat($(".w2").attr("v"));
-  p3 = parseFloat($(".w3").attr("v"));
-  l = parseFloat($(".r").attr("v"));
-  n = parseFloat($(".z").attr("v"));
-  b = parseFloat($(".m").attr("v"));
   q = d3.select(".eqc");
-  w = gz(parseFloat(q.attr("cx")),parseFloat(q.attr("cy")),positions,p1,p2,p3,zip,l,n,b);
+  w = gz(parseFloat(q.attr("cx")),parseFloat(q.attr("cy")),positions,100,0,0,zip);
   q.attr("cx",parseFloat(q.attr("cx"))+w[0]);
   q.attr("cy",parseFloat(q.attr("cy"))+w[1]);
-  $(".lon").children("div").children("h3").html(Math.round(parseFloat(q.attr("cx"))*1000)/1000);
-  $(".lat").children("div").children("h3").html(Math.round(parseFloat(q.attr("cy"))*1000)/1000);
-  $(".spd").children("div").children("h3").html(Math.round(Math.sqrt((w[0]*w[0])+(w[1]*w[1]))*1000)/1000);
-
+  
 }
 
 function gclick(d){
@@ -524,7 +491,12 @@ function zoomed() {
 }
 
     </script>
-    <!-- / jquery -->
+
+
+
+
+
+<!-- / jquery -->
 <script src='assets/javascripts/jquery/jquery.min.js' type='text/javascript'></script>
 <!-- / jquery mobile events (for touch and slide) -->
 <script src='assets/javascripts/plugins/mobile_events/jquery.mobile-events.min.js' type='text/javascript'></script>
@@ -629,9 +601,5 @@ function zoomed() {
 
 
 
-
-
-
-
-
+</body>
 </html>
